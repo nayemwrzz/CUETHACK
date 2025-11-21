@@ -1,0 +1,428 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      campaign-service: ${{ steps.changes.outputs.campaign-service }}
+      pledge-service: ${{ steps.changes.outputs.pledge-service }}
+      payment-service: ${{ steps.changes.outputs.payment-service }}
+      user-service: ${{ steps.changes.outputs.user-service }}
+      admin-service: ${{ steps.changes.outputs.admin-service }}
+      notification-service: ${{ steps.changes.outputs.notification-service }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      
+      - name: Detect changed services
+        id: changes
+        run: |
+          echo "Checking for changed services..."
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/campaign-service/"; then
+            echo "campaign-service=true" >> $GITHUB_OUTPUT
+            echo "✓ campaign-service changed"
+          else
+            echo "campaign-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/pledge-service/"; then
+            echo "pledge-service=true" >> $GITHUB_OUTPUT
+            echo "✓ pledge-service changed"
+          else
+            echo "pledge-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/payment-service/"; then
+            echo "payment-service=true" >> $GITHUB_OUTPUT
+            echo "✓ payment-service changed"
+          else
+            echo "payment-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/user-service/"; then
+            echo "user-service=true" >> $GITHUB_OUTPUT
+            echo "✓ user-service changed"
+          else
+            echo "user-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/admin-service/"; then
+            echo "admin-service=true" >> $GITHUB_OUTPUT
+            echo "✓ admin-service changed"
+          else
+            echo "admin-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^services/notification-service/"; then
+            echo "notification-service=true" >> $GITHUB_OUTPUT
+            echo "✓ notification-service changed"
+          else
+            echo "notification-service=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -q "^frontend/"; then
+            echo "frontend=true" >> $GITHUB_OUTPUT
+            echo "✓ frontend changed"
+          else
+            echo "frontend=false" >> $GITHUB_OUTPUT
+          fi
+
+  test-campaign-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.campaign-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/campaign-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/campaign-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-pledge-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.pledge-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/pledge-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/pledge-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-payment-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.payment-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/payment-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/payment-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-user-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.user-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/user-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/user-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-admin-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.admin-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/admin-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/admin-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-notification-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.notification-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: services/notification-service
+        run: npm install
+      - name: Run tests
+        working-directory: services/notification-service
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+
+  test-frontend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Run tests
+        working-directory: frontend
+        run: |
+          if npm run | grep -q "test"; then
+            npm test
+          else
+            echo "No tests configured, skipping"
+          fi
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  build-campaign-service:
+    needs: [detect-changes, test-campaign-service]
+    if: needs.detect-changes.outputs.campaign-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/campaign-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/campaign-service
+          push: false
+          tags: careforall/campaign-service:${{ steps.version.outputs.version }},careforall/campaign-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-pledge-service:
+    needs: [detect-changes, test-pledge-service]
+    if: needs.detect-changes.outputs.pledge-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/pledge-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/pledge-service
+          push: false
+          tags: careforall/pledge-service:${{ steps.version.outputs.version }},careforall/pledge-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-payment-service:
+    needs: [detect-changes, test-payment-service]
+    if: needs.detect-changes.outputs.payment-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/payment-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/payment-service
+          push: false
+          tags: careforall/payment-service:${{ steps.version.outputs.version }},careforall/payment-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-user-service:
+    needs: [detect-changes, test-user-service]
+    if: needs.detect-changes.outputs.user-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/user-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/user-service
+          push: false
+          tags: careforall/user-service:${{ steps.version.outputs.version }},careforall/user-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-admin-service:
+    needs: [detect-changes, test-admin-service]
+    if: needs.detect-changes.outputs.admin-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/admin-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/admin-service
+          push: false
+          tags: careforall/admin-service:${{ steps.version.outputs.version }},careforall/admin-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-notification-service:
+    needs: [detect-changes, test-notification-service]
+    if: needs.detect-changes.outputs.notification-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Extract version
+        id: version
+        working-directory: services/notification-service
+        run: |
+          VERSION=$(node -p "require('./package.json').version || '1.0.0'")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/notification-service
+          push: false
+          tags: careforall/notification-service:${{ steps.version.outputs.version }},careforall/notification-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-frontend:
+    needs: [detect-changes, test-frontend]
+    if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: false
+          tags: careforall/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [detect-changes, build-campaign-service, build-pledge-service, build-payment-service, build-user-service, build-admin-service, build-notification-service, build-frontend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changed Services:" >> $GITHUB_STEP_SUMMARY
+          echo "- Campaign Service: ${{ needs.detect-changes.outputs.campaign-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Pledge Service: ${{ needs.detect-changes.outputs.pledge-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Payment Service: ${{ needs.detect-changes.outputs.payment-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- User Service: ${{ needs.detect-changes.outputs.user-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Admin Service: ${{ needs.detect-changes.outputs.admin-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Notification Service: ${{ needs.detect-changes.outputs.notification-service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: ${{ needs.detect-changes.outputs.frontend }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Docker images built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "2. Ready for deployment" >> $GITHUB_STEP_SUMMARY
+          echo "3. In production: Push to registry and deploy" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy notification
+        run: |
+          echo "✅ CI/CD Pipeline completed successfully"
+          echo "Changed services detected and built"
+          echo "In production environment, this would deploy to staging/production"
