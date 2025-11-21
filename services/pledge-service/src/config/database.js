@@ -4,10 +4,7 @@ const logger = require('../utils/logger');
 async function connectDB() {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/pledges';
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoUri);
     logger.info('MongoDB connected', { uri: mongoUri.replace(/:[^:@]+@/, ':****@') });
   } catch (error) {
     logger.error('MongoDB connection error', { error: error.message });
