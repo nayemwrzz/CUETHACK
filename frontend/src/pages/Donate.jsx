@@ -15,6 +15,8 @@ function Donate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [idempotencyKey, setIdempotencyKey] = useState(null);
+  const [paymentIdempotencyKey, setPaymentIdempotencyKey] = useState(null);
 
   useEffect(() => {
     loadCampaign();
@@ -29,25 +31,52 @@ function Donate() {
     }
   };
 
-  const generateIdempotencyKey = () => {
-    return `pledge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const generateIdempotencyKey = (campaignId, userId, amount) => {
+    // Generate key based on form data + session
+    // Same form data + same session = same key (for duplicate clicks/retries)
+    const sessionKey = `donation-${campaignId}`;
+    let sessionId = sessionStorage.getItem(sessionKey);
+    
+    if (!sessionId) {
+      sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem(sessionKey, sessionId);
+    }
+    
+    // Key format: operation-campaign-user-amount-session
+    return `pledge-${campaignId}-${userId || 'anonymous'}-${amount}-${sessionId}`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (loading) return;
+    
     setError('');
     setSuccess('');
     setLoading(true);
 
     try {
       const user = JSON.parse(localStorage.getItem('user') || 'null');
-      const idempotencyKey = generateIdempotencyKey();
+      
+      // Generate key ONCE (or reuse if retry)
+      // This ensures duplicate clicks use the SAME key
+      if (!idempotencyKey) {
+        const key = generateIdempotencyKey(id, user?.id, parseFloat(formData.amount));
+        setIdempotencyKey(key);
+      }
+      
+      // Generate payment key ONCE
+      if (!paymentIdempotencyKey) {
+        const key = `payment-${idempotencyKey}`;
+        setPaymentIdempotencyKey(key);
+      }
 
-      // Step 1: Create pledge
+      // Step 1: Create pledge (uses SAME key for retries)
       const pledgeResponse = await pledgeAPI.create({
         campaignId: id,
         amount: parseFloat(formData.amount),
-        idempotencyKey,
+        idempotencyKey, // SAME key for duplicate clicks
         userId: user?.id || null,
         anonymous: formData.anonymous,
         message: formData.message,
@@ -55,15 +84,17 @@ function Donate() {
 
       const pledgeId = pledgeResponse.data.data.pledge._id || pledgeResponse.data.data.pledge.id;
 
-      // Step 2: Process payment
-      const paymentIdempotencyKey = generateIdempotencyKey();
+      // Step 2: Process payment (uses SAME key for retries)
       await paymentAPI.create({
         pledgeId,
         amount: parseFloat(formData.amount),
-        idempotencyKey: paymentIdempotencyKey,
+        idempotencyKey: paymentIdempotencyKey, // SAME key for duplicate clicks
         paymentMethod: 'STRIPE',
       });
 
+      // Success - clear session for this campaign
+      sessionStorage.removeItem(`donation-${id}`);
+      
       setSuccess('Donation successful! Thank you for your contribution.');
       setTimeout(() => {
         navigate(`/campaigns/${id}`);

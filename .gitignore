@@ -1,7 +1,9 @@
-# Exclude all markdown files except README.md and JUDGES_QUICK_TEST.md
+# Exclude all markdown files except README.md, JUDGES_QUICK_TEST.md, SYSTEM_EXPLANATION.md, and IDEMPOTENCY_KEY_EXPLANATION.md
 *.md
 !README.md
 !JUDGES_QUICK_TEST.md
+!SYSTEM_EXPLANATION.md
+!IDEMPOTENCY_KEY_EXPLANATION.md
 
 # Dependencies
 node_modules/
