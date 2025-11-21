@@ -26,7 +26,7 @@ services:
       - MONGODB_URI=mongodb+srv://n45islam_db_user:RVUITOizESaUT09g@cluster0.vsbjucs.mongodb.net/campaigns?retryWrites=true&w=majority
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -60,7 +60,7 @@ services:
       - REDIS_URI=redis://redis:6379
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       redis:
         condition: service_healthy
@@ -94,7 +94,7 @@ services:
       - REDIS_URI=redis://redis:6379
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       redis:
         condition: service_healthy
@@ -130,7 +130,7 @@ services:
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JWT_SECRET=your-secret-key-change-in-production
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -163,7 +163,7 @@ services:
       - MONGODB_URI=mongodb+srv://nayemahmedr45_db_user:yjxyfUzzmgQRyMII@cluster1.85psutp.mongodb.net/admin?retryWrites=true&w=majority
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -196,7 +196,7 @@ services:
       - MONGODB_URI=mongodb+srv://nayemahmedr45_db_user:yjxyfUzzmgQRyMII@cluster1.85psutp.mongodb.net/notifications?retryWrites=true&w=majority
       - RABBITMQ_URI=amqp://admin:admin123@rabbitmq:5672
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - LOGSTASH_URL=logstash:8081
+      - LOGSTASH_URL=logstash:8080
     depends_on:
       rabbitmq:
         condition: service_healthy

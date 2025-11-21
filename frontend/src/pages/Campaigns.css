@@ -1,3 +1,14 @@
+.campaigns-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.campaigns-header h1 {
+  margin: 0;
+}
+
 .filters {
   display: flex;
   gap: 15px;

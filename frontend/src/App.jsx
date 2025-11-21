@@ -7,6 +7,13 @@ import Donate from './pages/Donate';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
+import Notifications from './pages/Notifications';
+import CreateCampaign from './pages/CreateCampaign';
+import IdempotencyTest from './pages/IdempotencyTest';
+import OutboxTest from './pages/OutboxTest';
+import StateMachineTest from './pages/StateMachineTest';
+import CQRSTest from './pages/CQRSTest';
 import './App.css';
 
 function App() {
@@ -22,6 +29,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/campaigns/create" element={<CreateCampaign />} />
+          <Route path="/test/idempotency" element={<IdempotencyTest />} />
+          <Route path="/test/outbox" element={<OutboxTest />} />
+          <Route path="/test/state-machine" element={<StateMachineTest />} />
+          <Route path="/test/cqrs" element={<CQRSTest />} />
         </Routes>
       </div>
     </Router>

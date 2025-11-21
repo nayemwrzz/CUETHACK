@@ -24,7 +24,7 @@ const logger = createLogger({
     ...(process.env.LOGSTASH_URL ? [
       new transports.Http({
         host: process.env.LOGSTASH_URL.split(':')[0] || 'logstash',
-        port: parseInt(process.env.LOGSTASH_URL.split(':')[1] || '8081'),
+        port: parseInt(process.env.LOGSTASH_URL.split(':')[1] || '8080'),
         path: '/',
         format: format.json()
       })

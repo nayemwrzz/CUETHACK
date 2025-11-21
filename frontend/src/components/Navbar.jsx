@@ -21,6 +21,17 @@ function Navbar() {
           </Link>
           <div className="nav-links">
             <Link to="/campaigns">Campaigns</Link>
+            <Link to="/admin">Admin</Link>
+            <Link to="/notifications">Notifications</Link>
+            <div className="dropdown">
+              <span className="dropdown-toggle">Testing</span>
+              <div className="dropdown-menu">
+                <Link to="/test/idempotency">Idempotency</Link>
+                <Link to="/test/outbox">Outbox</Link>
+                <Link to="/test/state-machine">State Machine</Link>
+                <Link to="/test/cqrs">CQRS</Link>
+              </div>
+            </div>
             {token ? (
               <>
                 <Link to="/profile">Profile</Link>

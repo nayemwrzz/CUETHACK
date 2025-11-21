@@ -30,7 +30,12 @@ function Campaigns() {
 
   return (
     <div className="container">
-      <h1>All Campaigns</h1>
+      <div className="campaigns-header">
+        <h1>All Campaigns</h1>
+        <Link to="/campaigns/create" className="btn btn-primary">
+          Create Campaign
+        </Link>
+      </div>
       
       <div className="filters">
         <select

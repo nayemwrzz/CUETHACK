@@ -20,7 +20,7 @@ const logger = winston.createLogger({
     ...(process.env.LOGSTASH_URL ? [
       new winston.transports.Http({
         host: process.env.LOGSTASH_URL.split(':')[0] || 'logstash',
-        port: parseInt(process.env.LOGSTASH_URL.split(':')[1] || '8081'),
+        port: parseInt(process.env.LOGSTASH_URL.split(':')[1] || '8080'),
         path: '/',
         format: winston.format.json()
       })
