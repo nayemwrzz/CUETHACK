@@ -1,16 +1,40 @@
 const winston = require('winston');
+const { createLogger, format, transports } = winston;
 
-const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
+// Create Winston logger with multiple transports
+const logger = createLogger({
+  format: format.combine(
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    format.errors({ stack: true }),
+    format.json()
   ),
+  defaultMeta: { 
+    service: 'pledge-service',
+    environment: process.env.NODE_ENV || 'development'
+  },
   transports: [
-    new winston.transports.Console({
-      format: winston.format.simple()
-    })
+    // Console output
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    }),
+    // Send to Logstash via HTTP (if LOGSTASH_URL is set)
+    ...(process.env.LOGSTASH_URL ? [
+      new transports.Http({
+        host: process.env.LOGSTASH_URL.split(':')[0] || 'logstash',
+        port: parseInt(process.env.LOGSTASH_URL.split(':')[1] || '8081'),
+        path: '/',
+        format: format.json()
+      })
+    ] : [])
   ]
 });
 
-module.exports = logger;
+// If Logstash URL not provided, still log to console
+if (!process.env.LOGSTASH_URL) {
+  logger.info('Logstash URL not configured, logging to console only');
+}
 
+module.exports = logger;
